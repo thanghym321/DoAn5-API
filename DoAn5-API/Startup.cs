@@ -33,7 +33,11 @@ namespace DoAn5_API
             //db
             services.AddDbContext<DoAn5DbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DoAn5Db")));
+
+            services.AddTransient<IManageAccount, ManageAccount>();
+            services.AddTransient<IManageCategory, ManageCategory>();
             services.AddTransient<IManageProduct, ManageProduct>();
+
 
             services.AddControllers();
 
