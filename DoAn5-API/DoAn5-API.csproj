@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>DoAn5_API</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DoAn5.Application\DoAn5.Application.csproj" />
+    <ProjectReference Include="..\DoAn5.DataContext\DoAn5.DataContext.csproj" />
+  </ItemGroup>
+
+
+</Project>
