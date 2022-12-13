@@ -40,7 +40,7 @@ namespace DoAn5.DataContext.EF
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Export_Invoice> Export_Invoices { get; set; }
         public DbSet<Export_Invoice_Detail> Export_Invoice_Details { get; set; }
-        public DbSet<Import_Invoice> import_Invoices { get; set; }
+        public DbSet<Import_Invoice> Import_Invoices { get; set; }
         public DbSet<Import_Invoice_Detail> Import_Invoice_Details { get; set; }
         public DbSet<Producer> Producers { get; set; }
         public DbSet<Product> Products { get; set; }

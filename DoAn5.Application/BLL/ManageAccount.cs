@@ -16,7 +16,6 @@ namespace DoAn5.Application.BLL
     public class ManageAccount:IManageAccount
     {
         private readonly DoAn5DbContext _context;
-
         public ManageAccount(DoAn5DbContext context)
         {
             _context = context;
@@ -37,8 +36,7 @@ namespace DoAn5.Application.BLL
 
             }).ToListAsync();
         }
-
-        public async Task<PagedResult<Account>> GetAllPaging(int PageIndex, int PageSize, string keyword)
+        public async Task<PagedResult<Account>> GetAllPaging(int pageindex, int pagesize, string keyword)
         {
             var query = from a in _context.Accounts
                         select new { a };
@@ -49,7 +47,7 @@ namespace DoAn5.Application.BLL
             }
 
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((PageIndex - 1) * PageSize).Take(PageSize)
+            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
             .Select(x => new Account()
             {
                 Id = x.a.Id,
@@ -72,13 +70,13 @@ namespace DoAn5.Application.BLL
         }
         public async Task<Account> GetById(int Id)
         {
-            var ob = await _context.Accounts.FindAsync(Id);
+            var account = await _context.Accounts.FindAsync(Id);
 
-            return ob;
+            return account;
         }
         public async Task<int> Create(Account request)
         {
-            var ob = new Account()
+            var account = new Account()
             {
                 User_Id = request.User_Id,
                 UserName = request.UserName,
@@ -86,31 +84,33 @@ namespace DoAn5.Application.BLL
                 Permissions = request.Permissions
             };
 
-            _context.Accounts.Add(ob);
+            _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
-            return ob.Id;
+            return account.Id;
         }
         public async Task<int> Update(Account request)
         {
-            var ob = await _context.Accounts.FindAsync(request.Id);
+            var account = await _context.Accounts.FindAsync(request.Id);
 
-            if (ob == null) throw new Exception($"Cannot find a Account with id: {request.Id}");
+            if (account == null) throw new Exception($"Cannot find a account with id: {request.Id}");
 
-            ob.User_Id = request.User_Id;
-            ob.Password = request.Password;
-            ob.Status = request.Status;
-            ob.Permissions = request.Permissions;
+            account.User_Id = request.User_Id;
+            account.Password = request.Password;
+            account.Status = request.Status;
+            account.Permissions = request.Permissions;
 
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            return account.Id;
         }
 
         public async Task<int> Delete(int Id)
         {
-            var ob = await _context.Accounts.FindAsync(Id);
-            if (ob == null) throw new Exception($"Cannot find a Account: {Id}");
+            var account = await _context.Accounts.FindAsync(Id);
+            if (account == null) throw new Exception($"Cannot find a account: {Id}");
 
-            _context.Accounts.Remove(ob);
+            _context.Accounts.Remove(account);
             return await _context.SaveChangesAsync();
         }
     }

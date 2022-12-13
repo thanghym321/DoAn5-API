@@ -1,5 +1,4 @@
-﻿using DoAn5.Application.BLL;
-using DoAn5.Application.BLL.Interfaces;
+﻿using DoAn5.Application.BLL.Interfaces;
 using DoAn5.DataContext.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,83 +8,83 @@ namespace DoAn5_API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly IManageAccount _manageAccount;
-        public AccountsController(IManageAccount manageAccount)
+        private readonly IManageUser _manageUser;
+        public UsersController(IManageUser manageUser)
         {
-            _manageAccount = manageAccount;
+            _manageUser = manageUser;
         }
 
         [HttpGet]
         public async Task<IActionResult> get()
         {
-            var accounts = await _manageAccount.Get();
-            if (accounts == null)
+            var users = await _manageUser.Get();
+            if (users == null)
             {
                 return BadRequest("Get Failed");
             }
 
-            return Ok(accounts);
+            return Ok(users);
         }
 
         [HttpGet]
         public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize, string keyword)
         {
-            var accounts = await _manageAccount.GetAllPaging(pageindex, pagesize, keyword);
-            if (accounts == null)
+            var users = await _manageUser.GetAllPaging(pageindex, pagesize, keyword);
+            if (users == null)
             {
                 return BadRequest("Get Failed");
             }
 
-            return Ok(accounts);
+            return Ok(users);
         }
 
         [HttpGet("{Id}")]
         public async Task<IActionResult> getbyid(int Id)
         {
-            var account = await _manageAccount.GetById(Id);
-            if (account == null)
+            var user = await _manageUser.GetById(Id);
+            if (user == null)
             {
-                return BadRequest("Cannot find account");
+                return BadRequest("Cannot find user");
             }
-            return Ok(account);
+            return Ok(user);
 
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> create([FromBody] Account request)
+        public async Task<IActionResult> create([FromBody] User request)
         {
-            var Id = await _manageAccount.Create(request);
+            var Id = await _manageUser.Create(request);
             if (Id <= 0)
             {
                 return BadRequest("Create Failed");
             }
 
-            var account = await _manageAccount.GetById(Id);
+            var user = await _manageUser.GetById(Id);
 
-            return Ok(account);
+            return Ok(user);
 
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Account request)
+        public async Task<IActionResult> Update([FromBody] User request)
         {
-            var Id = await _manageAccount.Update(request);
+            var Id = await _manageUser.Update(request);
             if (Id <= 0)
             {
                 return BadRequest("Update Complete");
             }
 
-            var account = await _manageAccount.GetById(Id);
+            var user = await _manageUser.GetById(Id);
 
-            return Ok(account);
+            return Ok(user);
         }
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(int Id)
         {
-            var result = await _manageAccount.Delete(Id);
+            var result = await _manageUser.Delete(Id);
             if (result > 0)
             {
                 return Ok("Delete Complete");

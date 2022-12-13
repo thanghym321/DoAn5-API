@@ -7,7 +7,7 @@ using DoAn5.DataContext.Entities;
 
 namespace DoAn5_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -18,27 +18,42 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> get()
         {
             var products = await _manageProduct.Get();
+            if (products == null)
+            {
+                return BadRequest("Get Failed");
+            }
+
             return Ok(products);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByCategory([FromQuery] int? Category_Id, int PageIndex, int PageSize)
+        public async Task<IActionResult> getallbycategory([FromQuery] int? Category_Id, int PageIndex, int pagesize)
         {
-            var products = await _manageProduct.GetAllByCategory(Category_Id, PageIndex, PageSize);
+            var products = await _manageProduct.GetAllByCategory(Category_Id, PageIndex, pagesize);
+            if (products == null)
+            {
+                return BadRequest("Get Failed");
+            }
+
             return Ok(products);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllPaging([FromQuery] int? Category_Id, int PageIndex, int PageSize, string keyword)
+        public async Task<IActionResult> getallpaging([FromQuery] int? Category_Id, int pageindex, int pagesize, string keyword)
         {
-            var products = await _manageProduct.GetAllPaging(Category_Id, PageIndex, PageSize, keyword);
+            var products = await _manageProduct.GetAllPaging(Category_Id, pageindex, pagesize, keyword);
+            if (products == null)
+            {
+                return BadRequest("Get Failed");
+            }
+
             return Ok(products);
         }
 
-        [HttpGet("{productId}")]
-        public async Task<IActionResult> GetById(int Id)
+        [HttpGet("{Id}")]
+        public async Task<IActionResult> getbyid(int Id)
         {
             var product = await _manageProduct.GetById(Id);
             if (product == null)
@@ -51,12 +66,12 @@ namespace DoAn5_API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Product request)
+        public async Task<IActionResult> create([FromBody] Product request)
         {
             var Id = await _manageProduct.Create(request);
-            if (Id == 0)
+            if (Id <= 0)
             {
-                return BadRequest();
+                return BadRequest("Create Failed");
             }
 
             var product = await _manageProduct.GetById(Id);
@@ -68,12 +83,15 @@ namespace DoAn5_API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] Product request)
         {
-            var result = await _manageProduct.Update(request);
-            if (result > 0)
+            var Id = await _manageProduct.Update(request);
+            if (Id <= 0)
             {
-                return Ok("Update Completed");
+                return BadRequest("Update Complete");
             }
-            return BadRequest("Update Failed");
+
+            var product = await _manageProduct.GetById(Id);
+
+            return Ok(product);
         }
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(int Id)
@@ -81,7 +99,7 @@ namespace DoAn5_API.Controllers
             var result = await _manageProduct.Delete(Id);
             if (result > 0)
             {
-                return Ok("Delete Completed");
+                return Ok("Delete Complete");
             }
             return BadRequest("Delete Failed");
         }

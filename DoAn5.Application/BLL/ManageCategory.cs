@@ -17,7 +17,6 @@ namespace DoAn5.Application.BLL
     public class ManageCategory :IManageCategory
     {
         private readonly DoAn5DbContext _context;
-
         public ManageCategory(DoAn5DbContext context)
         {
             _context = context;
@@ -37,8 +36,7 @@ namespace DoAn5.Application.BLL
 
             }).ToListAsync();
         }
-
-        public async Task<PagedResult<Category>> GetAllPaging(int PageIndex, int PageSize, string keyword)
+        public async Task<PagedResult<Category>> GetAllPaging(int pageindex, int pagesize, string keyword)
         {
             var query = from a in _context.Categories
                         select new { a };
@@ -49,7 +47,7 @@ namespace DoAn5.Application.BLL
             }
 
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((PageIndex - 1) * PageSize).Take(PageSize)
+            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
             .Select(x => new Category()
             {
                 Id = x.a.Id,
@@ -71,45 +69,46 @@ namespace DoAn5.Application.BLL
         }
         public async Task<Category> GetById(int Id)
         {
-            var ob = await _context.Categories.FindAsync(Id);
+            var category = await _context.Categories.FindAsync(Id);
 
-            return ob;
+            return category;
         }
         public async Task<int> Create(Category request)
         {
-            var ob = new Category()
+            var category = new Category()
             {
                 Name = request.Name,
                 Image = request.Image,
-                ParentId = request.ParentId,
+                ParentId = request.ParentId
             };
 
-            _context.Categories.Add(ob);
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return ob.Id;
+            return category.Id;
         }
         public async Task<int> Update(Category request)
         {
-            var ob = await _context.Categories.FindAsync(request.Id);
+            var category = await _context.Categories.FindAsync(request.Id);
 
-            if (ob == null) throw new Exception($"Cannot find a Account with id: {request.Id}");
+            if (category == null) throw new Exception($"Cannot find a category with id: {request.Id}");
 
-                ob.Name = request.Name;
-                ob.Status = request.Status;
-                ob.Image = request.Image;
-                ob.ParentId = request.ParentId;
+            category.Name = request.Name;
+            category.Status = request.Status;
+            category.Image = request.Image;
+            category.ParentId = request.ParentId;
 
+            await _context.SaveChangesAsync();
 
-            return await _context.SaveChangesAsync();
+            return category.Id;
         }
 
         public async Task<int> Delete(int Id)
         {
-            var ob = await _context.Categories.FindAsync(Id);
-            if (ob == null) throw new Exception($"Cannot find a Account: {Id}");
+            var category = await _context.Categories.FindAsync(Id);
+            if (category == null) throw new Exception($"Cannot find a category: {Id}");
 
-            _context.Categories.Remove(ob);
+            _context.Categories.Remove(category);
             return await _context.SaveChangesAsync();
         }
 

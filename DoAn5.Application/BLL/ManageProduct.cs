@@ -36,7 +36,7 @@ namespace DoAn5.Application.BLL
             }).ToListAsync();
         }
 
-        public async Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int PageIndex, int PageSize)
+        public async Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int pageindex, int pagesize)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
@@ -44,11 +44,11 @@ namespace DoAn5.Application.BLL
 
             if (Category_Id.Value>0)
             {
-                query = query.Where(x => x.p.Category_Id == Category_Id);
+                query = query.Where(x => x.a.Category_Id == Category_Id);
             }
 
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((PageIndex - 1) * PageSize).Take(PageSize)
+            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
             .Select(x => new Product()
             {
                 Id = x.a.Id,
@@ -70,7 +70,7 @@ namespace DoAn5.Application.BLL
 
             return pageResult;
         }
-        public async Task<PagedResult<Product>> GetAllPaging(int? Category_Id, int PageIndex, int PageSize, string keyword)
+        public async Task<PagedResult<Product>> GetAllPaging(int? Category_Id, int pageindex, int pagesize, string keyword)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
@@ -86,7 +86,7 @@ namespace DoAn5.Application.BLL
             }
 
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((PageIndex - 1) * PageSize).Take(PageSize)
+            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
             .Select(x => new Product()
             {
                 Id = x.a.Id,
@@ -111,13 +111,13 @@ namespace DoAn5.Application.BLL
         }
         public async Task<Product> GetById(int Id)
         {
-            var ob = await _context.Products.FindAsync(Id);
+            var product = await _context.Products.FindAsync(Id);
 
-            return ob;
+            return product;
         }
         public async Task<int> Create(Product request)
         {
-            var ob = new Product()
+            var product = new Product()
             {
                 Category_Id = request.Category_Id,
                 Name = request.Name,
@@ -127,34 +127,36 @@ namespace DoAn5.Application.BLL
                 Unit_Id = request.Unit_Id,
             };
 
-            _context.Products.Add(ob);
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return ob.Id;
+            return product.Id;
         }
         public async Task<int> Update(Product request)
         {
-            var ob = await _context.Products.FindAsync(request.Id);
+            var product = await _context.Products.FindAsync(request.Id);
 
-            if (ob == null) throw new Exception($"Cannot find a product with id: {request.Id}");
+            if (product == null) throw new Exception($"Cannot find a product with id: {request.Id}");
 
-            ob.Category_Id = request.Category_Id;
-            ob.Name = request.Name;
-            ob.Description = request.Description;
-            ob.Image = request.Image;
-            ob.Producer_Id = request.Producer_Id;
-            ob.Unit_Id = request.Unit_Id;
-            ob.Status = request.Status;
+            product.Category_Id = request.Category_Id;
+            product.Name = request.Name;
+            product.Description = request.Description;
+            product.Image = request.Image;
+            product.Producer_Id = request.Producer_Id;
+            product.Unit_Id = request.Unit_Id;
+            product.Status = request.Status;
 
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            return product.Id;
         }
 
         public async Task<int> Delete(int Id)
         {
-            var ob = await _context.Products.FindAsync(Id);
-            if (ob == null) throw new Exception($"Cannot find a product: {Id}");
+            var product = await _context.Products.FindAsync(Id);
+            if (product == null) throw new Exception($"Cannot find a product: {Id}");
 
-            _context.Products.Remove(ob);
+            _context.Products.Remove(product);
             return await _context.SaveChangesAsync();
         }
     }

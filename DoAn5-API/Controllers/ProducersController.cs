@@ -1,5 +1,4 @@
-﻿using DoAn5.Application.BLL;
-using DoAn5.Application.BLL.Interfaces;
+﻿using DoAn5.Application.BLL.Interfaces;
 using DoAn5.DataContext.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,83 +8,83 @@ namespace DoAn5_API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class ProducersController : ControllerBase
     {
-        private readonly IManageAccount _manageAccount;
-        public AccountsController(IManageAccount manageAccount)
+        private readonly IManageProducer _manageProducer;
+        public ProducersController(IManageProducer manageProducer)
         {
-            _manageAccount = manageAccount;
+            _manageProducer = manageProducer;
         }
 
         [HttpGet]
         public async Task<IActionResult> get()
         {
-            var accounts = await _manageAccount.Get();
-            if (accounts == null)
+            var producers = await _manageProducer.Get();
+            if (producers == null)
             {
                 return BadRequest("Get Failed");
             }
 
-            return Ok(accounts);
+            return Ok(producers);
         }
 
         [HttpGet]
         public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize, string keyword)
         {
-            var accounts = await _manageAccount.GetAllPaging(pageindex, pagesize, keyword);
-            if (accounts == null)
+            var producers = await _manageProducer.GetAllPaging(pageindex, pagesize, keyword);
+            if (producers == null)
             {
                 return BadRequest("Get Failed");
             }
 
-            return Ok(accounts);
+            return Ok(producers);
         }
 
         [HttpGet("{Id}")]
         public async Task<IActionResult> getbyid(int Id)
         {
-            var account = await _manageAccount.GetById(Id);
-            if (account == null)
+            var producer = await _manageProducer.GetById(Id);
+            if (producer == null)
             {
-                return BadRequest("Cannot find account");
+                return BadRequest("Cannot find producer");
             }
-            return Ok(account);
+            return Ok(producer);
 
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> create([FromBody] Account request)
+        public async Task<IActionResult> create([FromBody] Producer request)
         {
-            var Id = await _manageAccount.Create(request);
+            var Id = await _manageProducer.Create(request);
             if (Id <= 0)
             {
                 return BadRequest("Create Failed");
             }
 
-            var account = await _manageAccount.GetById(Id);
+            var producer = await _manageProducer.GetById(Id);
 
-            return Ok(account);
+            return Ok(producer);
 
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Account request)
+        public async Task<IActionResult> Update([FromBody] Producer request)
         {
-            var Id = await _manageAccount.Update(request);
+            var Id = await _manageProducer.Update(request);
             if (Id <= 0)
             {
                 return BadRequest("Update Complete");
             }
 
-            var account = await _manageAccount.GetById(Id);
+            var producer = await _manageProducer.GetById(Id);
 
-            return Ok(account);
+            return Ok(producer);
         }
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(int Id)
         {
-            var result = await _manageAccount.Delete(Id);
+            var result = await _manageProducer.Delete(Id);
             if (result > 0)
             {
                 return Ok("Delete Complete");
