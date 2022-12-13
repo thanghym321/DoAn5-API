@@ -10,8 +10,8 @@ namespace DoAn5.Application.BLL.Interfaces
     public interface IManageProduct
     {
         Task<List<Product>> Get();
-        Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int PageIndex, int PageSize);
-        Task<PagedResult<Product>> GetAllPaging(int? Category_Id, int PageIndex, int PageSize, string keyword);
+        Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int pageindex, int pagesize);
+        Task<PagedResult<Product>> GetAllPaging(int? Category_Id, int pageindex, int pagesize, string keyword);
         Task<Product> GetById(int Id);
         Task<int> Create(Product request);
         Task<int> Update(Product request);

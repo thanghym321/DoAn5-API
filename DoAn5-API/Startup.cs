@@ -36,6 +36,9 @@ namespace DoAn5_API
 
             services.AddTransient<IManageAccount, ManageAccount>();
             services.AddTransient<IManageCategory, ManageCategory>();
+            services.AddTransient<IManageCustomer, ManageCustomer>();
+
+
             services.AddTransient<IManageProduct, ManageProduct>();
 
 
