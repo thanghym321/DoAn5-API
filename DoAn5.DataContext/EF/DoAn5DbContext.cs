@@ -9,7 +9,7 @@ namespace DoAn5.DataContext.EF
 {
     public class DoAn5DbContext : DbContext
     {
-        public DoAn5DbContext( DbContextOptions options) : base(options)
+        public DoAn5DbContext( DbContextOptions<DoAn5DbContext> options) : base(options)
         {
 
         }
