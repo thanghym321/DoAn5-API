@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DoAn5.Application.Common;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DoAn5.Application.BLL
 {
@@ -19,19 +21,29 @@ namespace DoAn5.Application.BLL
             _context = context;
         }
 
-        public async Task<List<Product>> Get()
+        public async Task<List<ProductViewModel>> Get()
         {
             var query = from a in _context.Products
-                        select new { a };
-            return await query.Select(x => new Product()
+                        join b in _context.Categories on a.Category_Id equals b.Id
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+
+                        select new {a, b, c, d, f};
+
+            return await query.Select(x => new ProductViewModel()
             {
                 Id = x.a.Id,
                 Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
                 Name = x.a.Name,
                 Description = x.a.Description,
                 Image = x.a.Image,
                 Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
                 Unit_Id = x.a.Unit_Id,
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
                 Status = x.a.Status
             }).ToListAsync();
         }
@@ -109,11 +121,42 @@ namespace DoAn5.Application.BLL
             return pageResult;
 
         }
-        public async Task<Product> GetById(int Id)
+        public async Task<ProductViewModel> GetById(int Id)
         {
             var product = await _context.Products.FindAsync(Id);
 
-            return product;
+            var query = from a in _context.Products
+                        join b in _context.Categories on a.Category_Id equals b.Id
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+                        join e in _context.Product_Images on a.Id equals e.Product_Id
+
+                        select new { a, b, c, d, f, e };
+
+            if (Id>0)
+            {
+                query = query.Where(x => x.e.Product_Id == Id);
+            }
+            var result = new ProductViewModel()
+            {
+                Id = product.Id,
+                Category_Id = product.Category_Id,
+                Category_Name = query.Select(x=>x.b.Name).FirstOrDefault(),
+                Name = product.Name,
+                Description = product.Description,
+                Image = product.Image,
+                Image_Detail = query.Select(x => x.e.Image).ToArray(),
+                Producer_Id = product.Producer_Id,
+                Producer_Name = query.Select(x => x.c.Name).FirstOrDefault(),
+                Unit_Id = product.Unit_Id,
+                Unit_Name = query.Select(x => x.d.Name).FirstOrDefault(),
+                Price = query.Select(x => x.f.Price).FirstOrDefault(),
+                Status = product.Status
+
+            };
+            return result;
+
         }
         public async Task<int> Create(Product request)
         {
