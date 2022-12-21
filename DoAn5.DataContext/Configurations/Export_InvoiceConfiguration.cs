@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DoAn5.DataContext.Enums;
 
 namespace DoAn5.DataContext.Configurations
 {
@@ -14,10 +15,8 @@ namespace DoAn5.DataContext.Configurations
             builder.ToTable("Export_Invoices");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Export_Date).HasDefaultValueSql("getdate()");
-            builder.Property(x => x.Total).IsRequired();
-
             builder.HasOne<Customer>().WithMany().HasForeignKey(fk => fk.Customer_Id);
-            builder.HasOne<User>().WithMany().HasForeignKey(fk => fk.User_Id);
+            builder.Property(x => x.Status).HasDefaultValue(StatusEI.Ordered);
 
 
         }

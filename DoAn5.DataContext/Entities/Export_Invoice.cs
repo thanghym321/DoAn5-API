@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoAn5.DataContext.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,7 +10,6 @@ namespace DoAn5.DataContext.Entities
         public int Id { get; set; }
         public DateTime Export_Date { get; set; }
         public int Customer_Id { get; set; }
-        public int User_Id { get; set; }
-        public decimal Total { get; set; }
+        public StatusEI Status { get; set; }
     }
 }

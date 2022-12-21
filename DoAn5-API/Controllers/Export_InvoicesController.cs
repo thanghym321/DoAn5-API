@@ -1,4 +1,5 @@
 ﻿using DoAn5.Application.BLL.Interfaces;
+using DoAn5.Application.Common;
 using DoAn5.DataContext.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,22 +55,18 @@ namespace DoAn5_API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> create([FromBody] Export_Invoice request)
+        public async Task<IActionResult> create([FromBody] Export_InvoiceRequest request)
         {
             var Id = await _manageExport_Invoice.Create(request);
-            if (Id <= 0)
+            if (Id == 1)
             {
-                return BadRequest("Create Failed");
+                return Ok(new { data = "OK" });
             }
-
-            var export_invoice = await _manageExport_Invoice.GetById(Id);
-
-            return Ok(export_invoice);
-
+                return BadRequest("Create Failed");
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Export_Invoice request)
+        public async Task<IActionResult> update([FromBody] Export_Invoice request)
         {
             var Id = await _manageExport_Invoice.Update(request);
             if (Id <= 0)
@@ -82,7 +79,7 @@ namespace DoAn5_API.Controllers
             return Ok(export_invoice);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageExport_Invoice.Delete(Id);
             if (result > 0)

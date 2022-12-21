@@ -70,7 +70,7 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Category request)
+        public async Task<IActionResult> update([FromBody] Category request)
         {
             var Id = await _manageCategory.Update(request);
             if (Id <= 0)
@@ -83,7 +83,7 @@ namespace DoAn5_API.Controllers
             return Ok(category);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageCategory.Delete(Id);
             if (result > 0)

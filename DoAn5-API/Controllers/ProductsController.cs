@@ -18,6 +18,18 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> timkiem([FromQuery] int? category_Name, int? Price, string product_Name)
+        {
+            var products = await _manageProduct.TimKiem(category_Name,Price,product_Name);
+            if (products == null)
+            {
+                return BadRequest("Get Failed");
+            }
+
+            return Ok(products);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> get()
         {
             var products = await _manageProduct.Get();
@@ -30,9 +42,21 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getallbycategory([FromQuery] int? Category_Id, int PageIndex, int pagesize)
+        public async Task<IActionResult> getbycategory([FromQuery] int? Category_Id)
         {
-            var products = await _manageProduct.GetAllByCategory(Category_Id, PageIndex, pagesize);
+            var products = await _manageProduct.GetByCategory(Category_Id);
+            if (products == null)
+            {
+                return BadRequest("Get Failed");
+            }
+
+            return Ok(products);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> getallbycategory([FromQuery] int? Category_Id, int pageindex, int pagesize)
+        {
+            var products = await _manageProduct.GetAllByCategory(Category_Id, pageindex, pagesize);
             if (products == null)
             {
                 return BadRequest("Get Failed");
@@ -81,7 +105,7 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Product request)
+        public async Task<IActionResult> update([FromBody] Product request)
         {
             var Id = await _manageProduct.Update(request);
             if (Id <= 0)
@@ -94,7 +118,7 @@ namespace DoAn5_API.Controllers
             return Ok(product);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageProduct.Delete(Id);
             if (result > 0)

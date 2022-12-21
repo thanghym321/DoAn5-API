@@ -28,8 +28,7 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Export_Date = x.a.Export_Date,
                 Customer_Id = x.a.Customer_Id,
-                User_Id = x.a.User_Id,
-                Total = x.a.Total
+                Status = x.a.Status,
 
             }).ToListAsync();
         }
@@ -45,8 +44,7 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Export_Date = x.a.Export_Date,
                 Customer_Id = x.a.Customer_Id,
-                User_Id = x.a.User_Id,
-                Total = x.a.Total
+                Status = x.a.Status,
 
             }).ToListAsync();
 
@@ -65,19 +63,30 @@ namespace DoAn5.Application.BLL
 
             return export_invoice;
         }
-        public async Task<int> Create(Export_Invoice request)
+        public async Task<int> Create(Export_InvoiceRequest request)
         {
-            var export_invoice = new Export_Invoice()
-            {
-                Customer_Id = request.Customer_Id,
-                User_Id = request.User_Id,
-                Total = request.Total
-            };
-
-            _context.Export_Invoices.Add(export_invoice);
+            _context.Customers.Add(request.customer);
             await _context.SaveChangesAsync();
 
-            return export_invoice.Id;
+            int Customer_Id = request.customer.Id;
+            Export_Invoice export_invoice = new Export_Invoice();
+            export_invoice.Customer_Id = Customer_Id;
+            export_invoice.Export_Date = System.DateTime.Now;
+            _context.Export_Invoices.Add(export_invoice);
+            await _context.SaveChangesAsync();
+            int Export_Invoice_Id = export_invoice.Id;
+
+            if (request.list_detail.Count > 0)
+            {
+                foreach (var x in request.list_detail)
+                {
+                    x.Export_Invoice_Id = Export_Invoice_Id;
+                    _context.Export_Invoice_Details.Add(x);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return 1;
         }
         public async Task<int> Update(Export_Invoice request)
         {
@@ -85,15 +94,13 @@ namespace DoAn5.Application.BLL
 
             if (export_invoice == null) throw new Exception($"Cannot find a export_invoice with id: {request.Id}");
 
-                export_invoice.Customer_Id = request.Customer_Id;
-                export_invoice.User_Id = request.User_Id;
-                export_invoice.Total = request.Total;
+            export_invoice.Customer_Id = request.Customer_Id;
+            export_invoice.Status = request.Status;
 
             await _context.SaveChangesAsync();
 
             return export_invoice.Id;
         }
-
         public async Task<int> Delete(int Id)
         {
             var export_invoice = await _context.Export_Invoices.FindAsync(Id);

@@ -69,7 +69,7 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Provider request)
+        public async Task<IActionResult> update([FromBody] Provider request)
         {
             var Id = await _manageProvider.Update(request);
             if (Id <= 0)
@@ -82,7 +82,7 @@ namespace DoAn5_API.Controllers
             return Ok(provider);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageProvider.Delete(Id);
             if (result > 0)

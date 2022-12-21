@@ -48,11 +48,84 @@ namespace DoAn5.Application.BLL
             }).ToListAsync();
         }
 
-        public async Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int pageindex, int pagesize)
+        public async Task<List<ProductViewModel>> TimKiem(int? category_Id, int? Price,string product_Name)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
-                        select new { a };
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+
+                        select new { a, b, c, d, f };
+            if (category_Id != null)
+            {
+                query=query.Where(x=>x.a.Category_Id== category_Id);
+            }
+            if (Price != null)
+            {
+                query = query.Where(x => x.f.Price<Price);
+            }
+            if (product_Name != null)
+            {
+                query = query.Where(x => x.a.Name.Contains(product_Name.ToLower()));
+            }
+
+            return await query.Select(x => new ProductViewModel()
+            {
+                Id = x.a.Id,
+                Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
+                Name = x.a.Name,
+                Description = x.a.Description,
+                Image = x.a.Image,
+                Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
+                Unit_Id = x.a.Unit_Id,
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
+                Status = x.a.Status
+            }).ToListAsync();
+        }
+        public async Task<List<ProductViewModel>> GetByCategory(int? Category_Id)
+        {
+            var query = from a in _context.Products
+                        join b in _context.Categories on a.Category_Id equals b.Id
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+
+                        select new { a, b, c, d, f };
+
+            if (Category_Id.Value > 0)
+            {
+                query = query.Where(x => x.a.Category_Id == Category_Id);
+            }
+
+            return await query.Select(x => new ProductViewModel()
+            {
+                Id = x.a.Id,
+                Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
+                Name = x.a.Name,
+                Description = x.a.Description,
+                Image = x.a.Image,
+                Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
+                Unit_Id = x.a.Unit_Id,
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
+                Status = x.a.Status
+            }).ToListAsync();
+        }
+
+        public async Task<PagedResult<ProductViewModel>> GetAllByCategory(int? Category_Id, int pageindex, int pagesize)
+        {
+            var query = from a in _context.Products
+                        join b in _context.Categories on a.Category_Id equals b.Id
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+                        select new { a, b, c, d, f };
 
             if (Category_Id.Value>0)
             {
@@ -61,20 +134,24 @@ namespace DoAn5.Application.BLL
 
             int totalRow = await query.CountAsync();
             var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
-            .Select(x => new Product()
+            .Select(x => new ProductViewModel()
             {
                 Id = x.a.Id,
                 Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
                 Name = x.a.Name,
                 Description = x.a.Description,
                 Image = x.a.Image,
                 Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
                 Unit_Id = x.a.Unit_Id,
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
                 Status = x.a.Status
 
             }).ToListAsync();
 
-            var pageResult = new PagedResult<Product>()
+            var pageResult = new PagedResult<ProductViewModel>()
             {
                 TotalRecord = totalRow,
                 Items = data,
