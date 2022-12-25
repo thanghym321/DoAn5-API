@@ -16,6 +16,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
 using DoAn5.DataContext.Entities;
+using WebApi.Services;
+using DoAn5_API.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Diagnostics;
 
 namespace DoAn5_API
 {
@@ -35,6 +41,31 @@ namespace DoAn5_API
             services.AddDbContext<DoAn5DbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DoAn5Db")));
 
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             //services
             services.AddTransient<IManageAccount, ManageAccount>();
             services.AddTransient<IManageCategory, ManageCategory>();
@@ -53,6 +84,7 @@ namespace DoAn5_API
             services.AddTransient<IManageUser, ManageUser>();
 
 
+            services.AddHttpClient();
             services.AddControllers();
 
             //swagger
@@ -60,7 +92,7 @@ namespace DoAn5_API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-            });
+            });          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
