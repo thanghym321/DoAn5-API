@@ -70,7 +70,7 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Account request)
+        public async Task<IActionResult> update([FromBody] Account request)
         {
             var Id = await _manageAccount.Update(request);
             if (Id <= 0)
@@ -83,7 +83,7 @@ namespace DoAn5_API.Controllers
             return Ok(account);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageAccount.Delete(Id);
             if (result > 0)

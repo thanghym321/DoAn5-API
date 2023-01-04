@@ -4,10 +4,9 @@ using System.Text;
 
 namespace DoAn5.DataContext.Enums
 {
-    public enum Status
+    public enum StatusEI
     {
-        InActive,
-        Active
-
+        Ordered,
+        Cancelled
     }
 }

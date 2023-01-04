@@ -4,18 +4,20 @@ using DoAn5.DataContext.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoAn5.DataContext.Migrations
 {
     [DbContext(typeof(DoAn5DbContext))]
-    partial class DoAn5DbContextModelSnapshot : ModelSnapshot
+    [Migration("20221221162044_update")]
+    partial class update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.30")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -26,9 +28,6 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
@@ -36,19 +35,16 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<string>("Permissions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int?>("User_Id")
+                    b.Property<int>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -75,7 +71,9 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -247,9 +245,6 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<int>("Category_Id")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date_Created")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasColumnType("ntext");
 
@@ -263,7 +258,9 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("Unit_Id")
                         .HasColumnType("int");
@@ -386,17 +383,8 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(1500)");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("GioiTinh")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(250)");
@@ -407,7 +395,7 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -418,7 +406,9 @@ namespace DoAn5.DataContext.Migrations
                 {
                     b.HasOne("DoAn5.DataContext.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("User_Id");
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DoAn5.DataContext.Entities.Export_Invoice", b =>

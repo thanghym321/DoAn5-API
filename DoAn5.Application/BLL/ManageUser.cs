@@ -1,116 +1,73 @@
-﻿using DoAn5.Application.BLL.Interfaces;
-using DoAn5.Application.Common;
-using DoAn5.DataContext.EF;
-using DoAn5.DataContext.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using DoAn5_API.Entities;
+using DoAn5_API.Helpers;
+using DoAn5_API.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using DoAn5.DataContext.EF;
+using DoAn5.Application.BLL.Interfaces;
 
-namespace DoAn5.Application.BLL
+namespace WebApi.Services
 {
-    public class ManageUser :IManageUser
+    public class ManageUser : IManageUser
     {
         private readonly DoAn5DbContext _context;
-        public ManageUser(DoAn5DbContext context)
+        private readonly AppSettings _appSettings;
+
+        public ManageUser(IOptions<AppSettings> appSettings, DoAn5DbContext context)
         {
+            _appSettings = appSettings.Value;
             _context = context;
         }
 
-        public async Task<List<User>> Get()
+        public UserViewModel Authenticate(string username, string password)
         {
-            var query = from a in _context.Users
-                        select new { a };
-            return await query.Select(x => new User()
+            var result = from a in _context.Accounts
+                         join u in _context.Users on a.User_Id equals u.Id
+                         select new UserViewModel 
+                         { 
+                             Role = a.Permissions, 
+                             User_Id = a.User_Id, 
+                             UserName = a.UserName, 
+                             Name = u.Name, 
+                             PassWord = a.Password,
+                             Address = u.Address,
+                             Phone = u.Phone, 
+                             Email = u.Email 
+                         };
+
+            var user = result.SingleOrDefault(x => x.UserName == username && x.PassWord == password);
+
+            // return null if user not found
+            if (user == null)
+                return null;
+
+            // authentication successful so generate jwt token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Id = x.a.Id,
-                Name = x.a.Name,
-                Address = x.a.Address,
-                Phone = x.a.Phone,
-                Email = x.a.Email,
-                Status = x.a.Status
-
-            }).ToListAsync();
-        }
-        public async Task<PagedResult<User>> GetAllPaging(int pageindex, int pagesize, string keyword)
-        {
-            var query = from a in _context.Users
-                        select new { a };
-
-            if (!string.IsNullOrEmpty(keyword))
-            {
-                query = query.Where(x => x.a.Name.Contains(keyword));
-            }
-
-            int totalRow = await query.CountAsync();
-            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
-            .Select(x => new User()
-            {
-                Id = x.a.Id,
-                Name = x.a.Name,
-                Address = x.a.Address,
-                Phone = x.a.Phone,
-                Email = x.a.Email,
-                Status = x.a.Status
-
-            }).ToListAsync();
-
-            var pageResult = new PagedResult<User>()
-            {
-                TotalRecord = totalRow,
-                Items = data,
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Name.ToString()),
+                    new Claim(ClaimTypes.MobilePhone, user.Phone.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            user.Token = tokenHandler.WriteToken(token);
 
-            return pageResult;
-
-        }
-        public async Task<User> GetById(int Id)
-        {
-            var user = await _context.Users.FindAsync(Id);
-
-            return user;
-        }
-        public async Task<int> Create(User request)
-        {
-            var user = new User()
-            {
-                Name = request.Name,
-                Address = request.Address,
-                Phone = request.Phone,
-                Email = request.Email,
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return user.Id;
-        }
-        public async Task<int> Update(User request)
-        {
-            var user = await _context.Users.FindAsync(request.Id);
-
-            if (user == null) throw new Exception($"Cannot find a user with id: {request.Id}");
-
-            user.Name = request.Name;
-            user.Address = request.Address;
-            user.Phone = request.Phone;
-            user.Email = request.Email;
-            user.Status = request.Status;
-
-            await _context.SaveChangesAsync();
-
-            return user.Id;
+            return user.WithoutPassword();
         }
 
-        public async Task<int> Delete(int Id)
-        {
-            var user = await _context.Users.FindAsync(Id);
-            if (user == null) throw new Exception($"Cannot find a user: {Id}");
-
-            _context.Users.Remove(user);
-            return await _context.SaveChangesAsync();
-        }
     }
 }

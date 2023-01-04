@@ -4,14 +4,16 @@ using DoAn5.DataContext.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoAn5.DataContext.Migrations
 {
     [DbContext(typeof(DoAn5DbContext))]
-    partial class DoAn5DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230104030613_04-01-2023")]
+    partial class _04012023
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

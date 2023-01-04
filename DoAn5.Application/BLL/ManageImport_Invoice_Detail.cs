@@ -52,7 +52,7 @@ namespace DoAn5.Application.BLL
 
             var pageResult = new PagedResult<Import_Invoice_Detail>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 

@@ -69,7 +69,7 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Producer request)
+        public async Task<IActionResult> update([FromBody] Producer request)
         {
             var Id = await _manageProducer.Update(request);
             if (Id <= 0)
@@ -82,7 +82,7 @@ namespace DoAn5_API.Controllers
             return Ok(producer);
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageProducer.Delete(Id);
             if (result > 0)

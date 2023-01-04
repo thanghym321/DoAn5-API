@@ -48,7 +48,7 @@ namespace DoAn5.Application.BLL
 
             var pageResult = new PagedResult<Product_Image>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 

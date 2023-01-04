@@ -15,5 +15,6 @@ namespace DoAn5.DataContext.Entities
         public int Producer_Id { get; set; }
         public int Unit_Id { get; set; }
         public Status Status { get; set; }
+        public DateTime Date_Created { get; set; }
     }
 }

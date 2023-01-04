@@ -4,14 +4,16 @@ using DoAn5.DataContext.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoAn5.DataContext.Migrations
 {
     [DbContext(typeof(DoAn5DbContext))]
-    partial class DoAn5DbContextModelSnapshot : ModelSnapshot
+    [Migration("20221227064554_add-datecreated-product")]
+    partial class adddatecreatedproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +44,7 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -75,7 +77,9 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -407,7 +411,7 @@ namespace DoAn5.DataContext.Migrations
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 

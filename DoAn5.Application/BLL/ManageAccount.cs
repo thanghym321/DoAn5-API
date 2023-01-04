@@ -61,7 +61,7 @@ namespace DoAn5.Application.BLL
 
             var pageResult = new PagedResult<Account>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 

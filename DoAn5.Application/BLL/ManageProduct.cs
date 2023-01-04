@@ -44,15 +44,52 @@ namespace DoAn5.Application.BLL
                 Unit_Id = x.a.Unit_Id,
                 Unit_Name = x.d.Name,
                 Price = x.f.Price,
-                Status = x.a.Status
+                Status = x.a.Status,
+                Date_Created = x.a.Date_Created,
+
             }).ToListAsync();
         }
-
-        public async Task<PagedResult<Product>> GetAllByCategory(int? Category_Id, int pageindex, int pagesize)
+        public async Task<List<ProductViewModel>> GetByCategory(int? Category_Id)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
-                        select new { a };
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+                        select new { a, b, c, d, f };
+
+            if (Category_Id.Value > 0)
+            {
+                query = query.Where(x => x.a.Category_Id == Category_Id);
+            }
+
+            return await query.Select(x => new ProductViewModel()
+            {
+                Id = x.a.Id,
+                Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
+                Name = x.a.Name,
+                Description = x.a.Description,
+                Image = x.a.Image,
+                Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
+                Unit_Id = x.a.Unit_Id,
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
+                Status = x.a.Status,
+                Date_Created = x.a.Date_Created,
+
+            }).ToListAsync();
+        }
+
+        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryPaging(int? Category_Id, int pageindex, int pagesize)
+        {
+            var query = from a in _context.Products
+                        join b in _context.Categories on a.Category_Id equals b.Id
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+                        select new { a, b, c, d, f };
 
             if (Category_Id.Value>0)
             {
@@ -61,36 +98,44 @@ namespace DoAn5.Application.BLL
 
             int totalRow = await query.CountAsync();
             var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
-            .Select(x => new Product()
+            .Select(x => new ProductViewModel()
             {
                 Id = x.a.Id,
                 Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
                 Name = x.a.Name,
                 Description = x.a.Description,
                 Image = x.a.Image,
                 Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
                 Unit_Id = x.a.Unit_Id,
-                Status = x.a.Status
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
+                Status = x.a.Status,
+                Date_Created = x.a.Date_Created,
 
             }).ToListAsync();
 
-            var pageResult = new PagedResult<Product>()
+            var pageResult = new PagedResult<ProductViewModel>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 
             return pageResult;
         }
-        public async Task<PagedResult<Product>> GetAllPaging(int? Category_Id, int pageindex, int pagesize, string keyword)
+        public async Task<PagedResult<ProductViewModel>> GetAllPaging(int? Category_Id, int pageindex, int pagesize, string Name)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
-                        select new { a };
+                        join c in _context.Producers on a.Producer_Id equals c.Id
+                        join d in _context.Units on a.Unit_Id equals d.Id
+                        join f in _context.Product_Prices on a.Id equals f.Product_Id
+                        select new { a, b, c, d, f };
 
-            if (!string.IsNullOrEmpty(keyword))
+            if (!string.IsNullOrEmpty(Name))
             {
-                query = query.Where(x => x.a.Name.Contains(keyword));
+                query = query.Where(x => x.a.Name.Contains(Name));
             }
             if (Category_Id != null)
             {
@@ -99,22 +144,27 @@ namespace DoAn5.Application.BLL
 
             int totalRow = await query.CountAsync();
             var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
-            .Select(x => new Product()
+            .Select(x => new ProductViewModel()
             {
                 Id = x.a.Id,
                 Category_Id = x.a.Category_Id,
+                Category_Name = x.b.Name,
                 Name = x.a.Name,
                 Description = x.a.Description,
                 Image = x.a.Image,
                 Producer_Id = x.a.Producer_Id,
+                Producer_Name = x.c.Name,
                 Unit_Id = x.a.Unit_Id,
-                Status = x.a.Status
+                Unit_Name = x.d.Name,
+                Price = x.f.Price,
+                Status = x.a.Status,
+                Date_Created= x.a.Date_Created,
 
             }).ToListAsync();
 
-            var pageResult = new PagedResult<Product>()
+            var pageResult = new PagedResult<ProductViewModel>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 
@@ -152,14 +202,16 @@ namespace DoAn5.Application.BLL
                 Unit_Id = product.Unit_Id,
                 Unit_Name = query.Select(x => x.d.Name).FirstOrDefault(),
                 Price = query.Select(x => x.f.Price).FirstOrDefault(),
-                Status = product.Status
+                Status = product.Status,
+                Date_Created=product.Date_Created
 
             };
             return result;
 
         }
-        public async Task<int> Create(Product request)
+        public async Task<int> Create(ProductRequest request)
         {
+           
             var product = new Product()
             {
                 Category_Id = request.Category_Id,
@@ -168,18 +220,26 @@ namespace DoAn5.Application.BLL
                 Image = request.Image,
                 Producer_Id = request.Producer_Id,
                 Unit_Id = request.Unit_Id,
+                Status = request.Status,
+                Date_Created = DateTime.Now,
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return product.Id;
+            int product_Id = product.Id;
+            Product_Price product_price = new Product_Price();
+            product_price.Product_Id = product_Id;
+            product_price.Price = request.Price;
+
+            _context.Product_Prices.Add(product_price);
+            await _context.SaveChangesAsync();
+
+            return 1;
         }
-        public async Task<int> Update(Product request)
+        public async Task<int> Update(ProductRequest request)
         {
             var product = await _context.Products.FindAsync(request.Id);
-
-            if (product == null) throw new Exception($"Cannot find a product with id: {request.Id}");
 
             product.Category_Id = request.Category_Id;
             product.Name = request.Name;
@@ -191,16 +251,21 @@ namespace DoAn5.Application.BLL
 
             await _context.SaveChangesAsync();
 
-            return product.Id;
+            var product_price = await _context.Product_Prices.
+                FirstOrDefaultAsync(x => x.Product_Id==request.Id);
+            product_price.Price = request.Price;
+            await _context.SaveChangesAsync();
+
+            return 1;
         }
 
         public async Task<int> Delete(int Id)
         {
             var product = await _context.Products.FindAsync(Id);
-            if (product == null) throw new Exception($"Cannot find a product: {Id}");
 
             _context.Products.Remove(product);
             return await _context.SaveChangesAsync();
+            return 1;
         }
     }
 }

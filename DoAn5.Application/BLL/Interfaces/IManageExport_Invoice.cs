@@ -12,7 +12,7 @@ namespace DoAn5.Application.BLL.Interfaces
         Task<List<Export_Invoice>> Get();
         Task<PagedResult<Export_Invoice>> GetAllPaging(int pageindex, int pagesize);
         Task<Export_Invoice> GetById(int Id);
-        Task<int> Create(Export_Invoice request);
+        Task<int> Create(Export_InvoiceRequest request);
         Task<int> Update(Export_Invoice request);
         Task<int> Delete(int Id);
     }
