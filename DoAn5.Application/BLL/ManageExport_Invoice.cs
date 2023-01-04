@@ -50,7 +50,7 @@ namespace DoAn5.Application.BLL
 
             var pageResult = new PagedResult<Export_Invoice>()
             {
-                TotalRecord = totalRow,
+                TotalItem = totalRow,
                 Items = data,
             };
 

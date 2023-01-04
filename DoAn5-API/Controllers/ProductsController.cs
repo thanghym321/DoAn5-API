@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using DoAn5.Application.BLL.Interfaces;
 using DoAn5.DataContext.Entities;
+using DoAn5.Application.Common;
 
 namespace DoAn5_API.Controllers
 {
@@ -15,18 +16,6 @@ namespace DoAn5_API.Controllers
         public ProductsController(IManageProduct manageProduct)
         {
             _manageProduct = manageProduct;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> timkiem([FromQuery] int? category_Name, int? Price, string product_Name)
-        {
-            var products = await _manageProduct.TimKiem(category_Name,Price,product_Name);
-            if (products == null)
-            {
-                return BadRequest("Get Failed");
-            }
-
-            return Ok(products);
         }
 
         [HttpGet]
@@ -56,7 +45,7 @@ namespace DoAn5_API.Controllers
         [HttpGet]
         public async Task<IActionResult> getallbycategory([FromQuery] int? Category_Id, int pageindex, int pagesize)
         {
-            var products = await _manageProduct.GetAllByCategory(Category_Id, pageindex, pagesize);
+            var products = await _manageProduct.GetAllByCategoryPaging(Category_Id, pageindex, pagesize);
             if (products == null)
             {
                 return BadRequest("Get Failed");
@@ -65,9 +54,9 @@ namespace DoAn5_API.Controllers
             return Ok(products);
         }
         [HttpGet]
-        public async Task<IActionResult> getallpaging([FromQuery] int? Category_Id, int pageindex, int pagesize, string keyword)
+        public async Task<IActionResult> getallpaging([FromQuery] int? Category_Id, int pageindex, int pagesize, string Name)
         {
-            var products = await _manageProduct.GetAllPaging(Category_Id, pageindex, pagesize, keyword);
+            var products = await _manageProduct.GetAllPaging(Category_Id, pageindex, pagesize, Name);
             if (products == null)
             {
                 return BadRequest("Get Failed");
@@ -90,40 +79,37 @@ namespace DoAn5_API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> create([FromBody] Product request)
+        public async Task<IActionResult> create([FromBody] ProductRequest request)
         {
-            var Id = await _manageProduct.Create(request);
-            if (Id <= 0)
+            var result = await _manageProduct.Create(request);
+            if (result == 1)
             {
-                return BadRequest("Create Failed");
+                return Ok(new { data = "OK" });
+
             }
 
-            var product = await _manageProduct.GetById(Id);
-
-            return Ok(product);
+            return BadRequest("Create Failed");
 
         }
 
         [HttpPut]
-        public async Task<IActionResult> update([FromBody] Product request)
+        public async Task<IActionResult> update([FromBody] ProductRequest request)
         {
-            var Id = await _manageProduct.Update(request);
-            if (Id <= 0)
+            var result = await _manageProduct.Update(request);
+            if (result == 1)
             {
-                return BadRequest("Update Complete");
+                return Ok(new { data = "OK" });
             }
-
-            var product = await _manageProduct.GetById(Id);
-
-            return Ok(product);
+            return BadRequest("Update Failed");
         }
+
         [HttpDelete("{Id}")]
         public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageProduct.Delete(Id);
-            if (result > 0)
+            if (result == 1)
             {
-                return Ok("Delete Complete");
+                return Ok(new { data = "OK" });
             }
             return BadRequest("Delete Failed");
         }

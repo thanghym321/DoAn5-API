@@ -6,7 +6,8 @@ namespace DoAn5.DataContext.Enums
 {
     public enum Status
     {
-        Active,
-        InActive
+        InActive,
+        Active
+
     }
 }

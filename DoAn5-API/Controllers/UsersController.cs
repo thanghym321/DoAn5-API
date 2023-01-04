@@ -32,7 +32,7 @@ namespace DoAn5_API.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            var user = _manageUser.Authenticate(model.Username, model.Password);
+            var user = _manageUser.Authenticate(model.username, model.password);
 
             if (user == null)
                 return BadRequest(new { message = "Tài khoản hoặc mật khẩu sai!" });

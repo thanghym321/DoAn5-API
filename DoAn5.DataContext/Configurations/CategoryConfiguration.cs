@@ -15,7 +15,6 @@ namespace DoAn5.DataContext.Configurations
             builder.ToTable("Categories");
             builder.HasKey(x => x.Id);
             builder.Property(x=> x.Name).HasColumnType("nvarchar(250)");
-            builder.Property(x => x.Status).HasDefaultValue(Status.Active);
             builder.Property(x => x.Image).HasColumnType("varchar(500)");
         }
     }
