@@ -10,6 +10,7 @@ namespace DoAn5.Application.BLL.Interfaces
     public interface IManageExport_Invoice_Detail
     {
         Task<List<Export_Invoice_Detail>> Get();
+        Task<List<Export_Invoice_DetailViewModel>> GetByExportInvoiceId(int Id);
         Task<PagedResult<Export_Invoice_Detail>> GetAllPaging(int pageindex, int pagesize);
         Task<Export_Invoice_Detail> GetById(int Id);
         Task<int> Create(Export_Invoice_Detail request);

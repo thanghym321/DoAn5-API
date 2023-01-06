@@ -49,7 +49,7 @@ namespace DoAn5.Application.BLL
 
             }).ToListAsync();
         }
-        public async Task<List<ProductViewModel>> GetByCategory(int? Category_Id)
+        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryPaging(int? Category_Id, int pageindex, int pagesize, string filter)
         {
             var query = from a in _context.Products
                         join b in _context.Categories on a.Category_Id equals b.Id
@@ -58,42 +58,29 @@ namespace DoAn5.Application.BLL
                         join f in _context.Product_Prices on a.Id equals f.Product_Id
                         select new { a, b, c, d, f };
 
-            if (Category_Id.Value > 0)
+            if (Category_Id!=null)
             {
                 query = query.Where(x => x.a.Category_Id == Category_Id);
             }
-
-            return await query.Select(x => new ProductViewModel()
+            if (filter == "")
             {
-                Id = x.a.Id,
-                Category_Id = x.a.Category_Id,
-                Category_Name = x.b.Name,
-                Name = x.a.Name,
-                Description = x.a.Description,
-                Image = x.a.Image,
-                Producer_Id = x.a.Producer_Id,
-                Producer_Name = x.c.Name,
-                Unit_Id = x.a.Unit_Id,
-                Unit_Name = x.d.Name,
-                Price = x.f.Price,
-                Status = x.a.Status,
-                Date_Created = x.a.Date_Created,
-
-            }).ToListAsync();
-        }
-
-        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryPaging(int? Category_Id, int pageindex, int pagesize)
-        {
-            var query = from a in _context.Products
-                        join b in _context.Categories on a.Category_Id equals b.Id
-                        join c in _context.Producers on a.Producer_Id equals c.Id
-                        join d in _context.Units on a.Unit_Id equals d.Id
-                        join f in _context.Product_Prices on a.Id equals f.Product_Id
-                        select new { a, b, c, d, f };
-
-            if (Category_Id.Value>0)
+                query = query.OrderByDescending(x => x.a.Date_Created);
+            }
+            if (filter == "AZ")
             {
-                query = query.Where(x => x.a.Category_Id == Category_Id);
+                query = query.OrderBy(x => x.a.Name);
+            }
+            if (filter == "ZA")
+            {
+                query = query.OrderByDescending(x => x.a.Name);
+            }
+            if (filter == "TD")
+            {
+                query = query.OrderBy(x => x.f.Price);
+            }
+            if (filter == "GD")
+            {
+                query = query.OrderByDescending(x => x.f.Price);
             }
 
             int totalRow = await query.CountAsync();
@@ -135,7 +122,7 @@ namespace DoAn5.Application.BLL
 
             if (!string.IsNullOrEmpty(Name))
             {
-                query = query.Where(x => x.a.Name.Contains(Name));
+                query = query.Where(x => x.a.Name.ToLower().Contains(Name.ToLower()));
             }
             if (Category_Id != null)
             {
@@ -143,7 +130,7 @@ namespace DoAn5.Application.BLL
             }
 
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((pageindex - 1) * pagesize).Take(pagesize)
+            var data = await query.OrderByDescending(x => x.a.Id).Skip((pageindex - 1) * pagesize).Take(pagesize)
             .Select(x => new ProductViewModel()
             {
                 Id = x.a.Id,
@@ -151,7 +138,7 @@ namespace DoAn5.Application.BLL
                 Category_Name = x.b.Name,
                 Name = x.a.Name,
                 Description = x.a.Description,
-                Image = x.a.Image,
+                Image =  x.a.Image,
                 Producer_Id = x.a.Producer_Id,
                 Producer_Name = x.c.Name,
                 Unit_Id = x.a.Unit_Id,
@@ -196,7 +183,7 @@ namespace DoAn5.Application.BLL
                 Name = product.Name,
                 Description = product.Description,
                 Image = product.Image,
-                Image_Detail = query.Select(x => x.e.Image).ToArray(),
+                Image_Detail = query.Select(x => x.e.Image).ToList(),
                 Producer_Id = product.Producer_Id,
                 Producer_Name = query.Select(x => x.c.Name).FirstOrDefault(),
                 Unit_Id = product.Unit_Id,
@@ -264,7 +251,7 @@ namespace DoAn5.Application.BLL
             var product = await _context.Products.FindAsync(Id);
 
             _context.Products.Remove(product);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return 1;
         }
     }

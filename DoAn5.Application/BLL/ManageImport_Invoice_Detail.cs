@@ -28,7 +28,7 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Product_Id = x.a.Product_Id,
                 Import_Invoice_Id = x.a.Import_Invoice_Id,
-                Amount = x.a.Amount,
+                Quantity = x.a.Quantity,
                 Price = x.a.Price
 
             }).ToListAsync();
@@ -45,7 +45,7 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Product_Id = x.a.Product_Id,
                 Import_Invoice_Id = x.a.Import_Invoice_Id,
-                Amount = x.a.Amount,
+                Quantity = x.a.Quantity,
                 Price = x.a.Price
 
             }).ToListAsync();
@@ -71,7 +71,7 @@ namespace DoAn5.Application.BLL
             {
                 Product_Id = request.Product_Id,
                 Import_Invoice_Id = request.Import_Invoice_Id,
-                Amount = request.Amount,
+                Quantity = request.Quantity,
                 Price = request.Price
             };
 
@@ -87,7 +87,7 @@ namespace DoAn5.Application.BLL
             if (import_invoice_detail == null) throw new Exception($"Cannot find a import_invoice_detail with id: {request.Id}");
 
             import_invoice_detail.Product_Id = request.Product_Id;
-            import_invoice_detail.Amount = request.Amount;
+            import_invoice_detail.Quantity = request.Quantity;
             import_invoice_detail.Price = request.Price;
 
             await _context.SaveChangesAsync();

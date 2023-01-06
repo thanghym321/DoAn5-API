@@ -31,21 +31,9 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getbycategory([FromQuery] int? Category_Id)
+        public async Task<IActionResult> getallbycategorypaging([FromQuery] int? Category_Id, int pageindex, int pagesize, string filter)
         {
-            var products = await _manageProduct.GetByCategory(Category_Id);
-            if (products == null)
-            {
-                return BadRequest("Get Failed");
-            }
-
-            return Ok(products);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> getallbycategory([FromQuery] int? Category_Id, int pageindex, int pagesize)
-        {
-            var products = await _manageProduct.GetAllByCategoryPaging(Category_Id, pageindex, pagesize);
+            var products = await _manageProduct.GetAllByCategoryPaging(Category_Id, pageindex, pagesize, filter);
             if (products == null)
             {
                 return BadRequest("Get Failed");
@@ -100,6 +88,7 @@ namespace DoAn5_API.Controllers
             {
                 return Ok(new { data = "OK" });
             }
+
             return BadRequest("Update Failed");
         }
 

@@ -30,9 +30,9 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getallpaging([FromQuery]int pageindex, int pagesize, string keyword)
+        public async Task<IActionResult> getallpaging([FromQuery]int pageindex, int pagesize, string Name)
         {
-            var categories = await _manageCategory.GetAllPaging(pageindex, pagesize, keyword);
+            var categories = await _manageCategory.GetAllPaging(pageindex, pagesize, Name);
             if (categories == null)
             {
                 return BadRequest("Get Failed");
@@ -57,38 +57,33 @@ namespace DoAn5_API.Controllers
         [HttpPost]
         public async Task<IActionResult> create([FromBody] Category request)
         {
-            var Id = await _manageCategory.Create(request);
-            if (Id <= 0)
+            var result = await _manageCategory.Create(request);
+            if (result == 1)
             {
-                return BadRequest("Create Failed");
+                return Ok(new { data = "OK" });
             }
 
-            var category = await _manageCategory.GetById(Id);
-
-            return Ok(category);
-
+            return BadRequest("Create Failed");
         }
 
         [HttpPut]
         public async Task<IActionResult> update([FromBody] Category request)
         {
-            var Id = await _manageCategory.Update(request);
-            if (Id <= 0)
+            var result = await _manageCategory.Update(request);
+            if (result == 1)
             {
-                return BadRequest("Update Complete");
+                return Ok(new { data = "OK" });
             }
 
-            var category = await _manageCategory.GetById(Id);
-
-            return Ok(category);
+            return BadRequest("Update Failed");
         }
         [HttpDelete("{Id}")]
         public async Task<IActionResult> delete(int Id)
         {
             var result = await _manageCategory.Delete(Id);
-            if (result > 0)
+            if (result == 1)
             {
-                return Ok("Delete Complete");
+                return Ok(new { data = "OK" });
             }
             return BadRequest("Delete Failed");
         }

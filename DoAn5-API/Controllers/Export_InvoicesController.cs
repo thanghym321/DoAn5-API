@@ -30,9 +30,9 @@ namespace DoAn5_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize)
+        public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize, string Name)
         {
-            var export_invoices = await _manageExport_Invoice.GetAllPaging(pageindex, pagesize);
+            var export_invoices = await _manageExport_Invoice.GetAllPaging(pageindex, pagesize, Name);
             if (export_invoices == null)
             {
                 return BadRequest("Get Failed");

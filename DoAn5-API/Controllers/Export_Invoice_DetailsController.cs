@@ -28,6 +28,18 @@ namespace DoAn5_API.Controllers
             return Ok(export_invoice_details);
         }
 
+        [HttpGet("{Id}")]
+        public async Task<IActionResult> getbyexportinvoiceid(int Id)
+        {
+            var export_invoice_detail = await _manageExport_Invoice_Detail.GetByExportInvoiceId(Id);
+            if (export_invoice_detail == null)
+            {
+                return BadRequest("Cannot find export_invoice_detail");
+            }
+            return Ok(export_invoice_detail);
+
+        }
+
         [HttpGet]
         public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize)
         {

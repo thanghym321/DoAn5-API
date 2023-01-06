@@ -13,7 +13,7 @@ namespace DoAn5.DataContext.Configurations
         {
             builder.ToTable("Export_Invoice_Details");
             builder.HasKey(x => x.Id);
-            builder.Property(x=> x.Amount).IsRequired();
+            builder.Property(x=> x.Quantity).IsRequired();
             builder.Property(x => x.Price).IsRequired();
 
             builder.HasOne<Export_Invoice>().WithMany().HasForeignKey(fk => fk.Export_Invoice_Id);

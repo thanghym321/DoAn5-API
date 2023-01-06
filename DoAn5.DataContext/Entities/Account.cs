@@ -14,6 +14,6 @@ namespace DoAn5.DataContext.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Status Status { get; set; }
-        public string Permissions { get; set; }
+        public string Role { get; set; }
     }
 }

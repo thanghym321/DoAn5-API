@@ -5,7 +5,7 @@ namespace DoAn5_API.Entities
 {
     public class UserModel
     {
-        public UserViewModel user { get; set; }
+        public User user { get; set; }
         public Account account { get; set; }
     }
 }

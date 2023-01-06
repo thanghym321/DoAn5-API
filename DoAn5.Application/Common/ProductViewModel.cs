@@ -13,7 +13,7 @@ namespace DoAn5.Application.Common
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-        public string[] Image_Detail { get; set; }
+        public List<string>Image_Detail { get; set; }
         public int Producer_Id { get; set; }
         public string Producer_Name { get; set; }
         public int Unit_Id { get; set; }

@@ -4,14 +4,16 @@ using DoAn5.DataContext.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoAn5.DataContext.Migrations
 {
     [DbContext(typeof(DoAn5DbContext))]
-    partial class DoAn5DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230104085254_column-role")]
+    partial class columnrole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,6 +142,9 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
                     b.Property<int>("Export_Invoice_Id")
                         .HasColumnType("int");
 
@@ -147,9 +152,6 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Product_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -198,6 +200,9 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
                     b.Property<int>("Import_Invoice_Id")
                         .HasColumnType("int");
 
@@ -205,9 +210,6 @@ namespace DoAn5.DataContext.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Product_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

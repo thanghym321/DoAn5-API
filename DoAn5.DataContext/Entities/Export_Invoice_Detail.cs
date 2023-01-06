@@ -9,7 +9,7 @@ namespace DoAn5.DataContext.Entities
         public int Id { get; set; }
         public int Export_Invoice_Id { get; set; }
         public int Product_Id { get; set; }
-        public int Amount { get; set; }
+        public int Quantity { get; set; }
         public decimal Price { get; set; }
     }
 }

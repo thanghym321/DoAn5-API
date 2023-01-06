@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DoAn5.Application.BLL.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DoAn5.Application.BLL
 {
@@ -28,10 +29,32 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Export_Invoice_Id = x.a.Export_Invoice_Id,
                 Product_Id = x.a.Product_Id,
-                Amount = x.a.Amount,
+                Quantity = x.a.Quantity,
                 Price = x.a.Price
 
             }).ToListAsync();
+        }
+        public async Task<List<Export_Invoice_DetailViewModel>> GetByExportInvoiceId(int Id)
+        {
+            var query = from a in _context.Export_Invoice_Details
+                        join b in _context.Products on a.Product_Id equals b.Id
+                        select new { a, b };
+
+            if (Id > 0)
+            {
+                query = query.Where(x => x.a.Export_Invoice_Id == Id);
+            }
+
+            var result = await query.Select(x => new Export_Invoice_DetailViewModel()
+            {
+                Quantity = x.a.Quantity,
+                Price = x.a.Price,
+                Name = x.b.Name,
+                Image = x.b.Image,
+
+            }).ToListAsync();
+
+            return result;
         }
         public async Task<PagedResult<Export_Invoice_Detail>> GetAllPaging(int pageindex, int pagesize)
         {
@@ -45,7 +68,7 @@ namespace DoAn5.Application.BLL
                 Id = x.a.Id,
                 Export_Invoice_Id = x.a.Export_Invoice_Id,
                 Product_Id = x.a.Product_Id,
-                Amount = x.a.Amount,
+                Quantity = x.a.Quantity,
                 Price = x.a.Price
 
             }).ToListAsync();
@@ -59,6 +82,7 @@ namespace DoAn5.Application.BLL
             return pageResult;
 
         }
+        
         public async Task<Export_Invoice_Detail> GetById(int Id)
         {
             var export_invoice_detail = await _context.Export_Invoice_Details.FindAsync(Id);
@@ -71,7 +95,7 @@ namespace DoAn5.Application.BLL
             {
                 Export_Invoice_Id = request.Export_Invoice_Id,
                 Product_Id = request.Product_Id,
-                Amount = request.Amount,
+                Quantity = request.Quantity,
                 Price = request.Price
             };
 
@@ -87,7 +111,7 @@ namespace DoAn5.Application.BLL
             if (export_invoice_detail == null) throw new Exception($"Cannot find a export_invoice_detail with id: {request.Id}");
 
             export_invoice_detail.Product_Id = request.Product_Id;
-            export_invoice_detail.Amount = request.Amount;
+            export_invoice_detail.Quantity = request.Quantity;
             export_invoice_detail.Price = request.Price;
 
             await _context.SaveChangesAsync();

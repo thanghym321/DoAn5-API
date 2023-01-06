@@ -28,6 +28,7 @@ namespace DoAn5_API.Controllers
             return Ok(product_images);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> getallpaging([FromQuery] int pageindex, int pagesize)
         {
@@ -51,7 +52,6 @@ namespace DoAn5_API.Controllers
             return Ok(product_image);
 
         }
-
 
         [HttpPost]
         public async Task<IActionResult> create([FromBody] Product_Image request)

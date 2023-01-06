@@ -26,24 +26,16 @@ namespace DoAn5.Application.BLL
         {
             var query = from a in _context.Categories
                         select new { a };
-            return await query.Select(x => new Category()
-            {
-                Id = x.a.Id,
-                Name = x.a.Name,
-                Status = x.a.Status,
-                Image = x.a.Image,
-                ParentId = x.a.ParentId
-
-            }).ToListAsync();
+            return await query.Select(x=>x.a).ToListAsync();
         }
-        public async Task<PagedResult<Category>> GetAllPaging(int pageindex, int pagesize, string keyword)
+        public async Task<PagedResult<Category>> GetAllPaging(int pageindex, int pagesize, string Name)
         {
             var query = from a in _context.Categories
                         select new { a };
 
-            if (!string.IsNullOrEmpty(keyword))
+            if (!string.IsNullOrEmpty(Name))
             {
-                query = query.Where(x => x.a.Name.Contains(keyword));
+                query = query.Where(x => x.a.Name.Contains(Name));
             }
 
             int totalRow = await query.CountAsync();
@@ -85,7 +77,7 @@ namespace DoAn5.Application.BLL
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return category.Id;
+            return 1;
         }
         public async Task<int> Update(Category request)
         {
@@ -100,16 +92,16 @@ namespace DoAn5.Application.BLL
 
             await _context.SaveChangesAsync();
 
-            return category.Id;
+            return 1;
         }
 
         public async Task<int> Delete(int Id)
         {
             var category = await _context.Categories.FindAsync(Id);
-            if (category == null) throw new Exception($"Cannot find a category: {Id}");
 
             _context.Categories.Remove(category);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return 1;
         }
 
     }
